@@ -3,7 +3,7 @@ from PIL import Image
 import google.generativeai as genai
 
 genai.configure(api_key= st.secrets["GOOGLE_API_KEY"])
-
+# @st.cache_data(show_spinner=False)
 def get_gemini_response(input, image):
     model = genai.GenerativeModel('gemini-pro-vision')
     if input!="":
@@ -24,11 +24,10 @@ def upload_picture():
 
 # Function to display the sample picture options
 def use_sample_picture():
-    sample_option = st.selectbox('Select a sample picture:', ['Dog', 'Jungle', 'Auditorium'])
+    sample_option = st.selectbox('Select a sample picture:', ['Dog', 'Jungle'])
     sample_images = {
         'Dog': './dog.jpeg',
-        'Jungle': './jungle.png',
-        'Auditorium':  './auditorium.png',
+        'Jungle': './jungle.png'
     }
     if sample_option in sample_images:
         image = Image.open(sample_images[sample_option])
@@ -97,6 +96,7 @@ elif choice == "Use Sample Picture":
 
 submit = st.button("Generate Story..")
 if submit and instructions and image:
-    response = get_gemini_response(instructions, image)
-    st.markdown('<h1 class="response">Here is your Story...</h1>', unsafe_allow_html=True)
-    st.write(response)
+    with st.spinner("Writing Story..."):
+        response = get_gemini_response(instructions, image)
+        st.markdown('<h1 class="response">Here is your Story...</h1>', unsafe_allow_html=True)
+        st.write(response)
